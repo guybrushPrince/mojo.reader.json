@@ -1,0 +1,48 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+jar {
+	manifest {
+		attributes 	'Implementation-Title': 'Mojo Source Plugin JSON',
+					'Implementation-Version': version
+	}
+}
+
+task fatJar(type: Jar) {
+	manifest {
+		attributes 	'Implementation-Title': 'Mojo Source Plugin JSON',
+					'Implementation-Version': version
+	}
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+repositories {
+    jcenter()
+	mavenCentral()
+	maven { url "https://jitpack.io" }
+}
+
+dependencies {
+	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
+	compile 'org.apache.logging.log4j:log4j-core:2.7'
+	compile 'com.github.guybrushPrince:mojo.core:master'
+	compile group: 'org.json', name: 'json', version: '20220320'
+    testCompile 'junit:junit:4.12'
+}
+
+javadoc {
+	source = sourceSets.main.allJava
+	classpath = configurations.compile
+}
+
+task listJars {
+    doLast {
+        configurations.compile.each { File file -> println file.name }
+    }
+}
+targetCompatibility = JavaVersion.VERSION_1_8
